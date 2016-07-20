@@ -2362,11 +2362,11 @@ header .logo a {
 	padding: 0 3rem;
 	margin-top: 4.8rem;
 	width: 100%;
-	background: #FFD700;
+	background: #000000;
 	color: #FFFFFF;
 }
 #contact button.submitform:hover, #contact button.submitform:focus {
-	background: #cc005f;
+	background: #FFD700;
 }
 #message-warning, #message-success {
 	display: none;
