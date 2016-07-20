@@ -1,309 +1,291 @@
-
-/*
-Theme Name: Resumido
-Description: Personal CV
-Author: Rafava
-Version: 1.0
-*/
-
-
-/* ==================================================================
- 
- * Table of Contents:
+/** 
+ * ===================================================================
+ * main js
  *
- * 1.0 - Loader
- * 2.0 - Carousels
- * 3.0 - Tabs
- * 4.0 - Lightbox
- * 5.0 - Menu
- * 6.0 - Frame 
- * 7.0 - Custom scrollbar
- * 8.0 - Contact form
- * 9.0 - IE bug
+ * ------------------------------------------------------------------- 
+ */ 
 
-================================================================== */
+(function($) {
 
-    
-$(window).load(function() {
-    "use strict"; 
+	"use strict";
 
-    //LOADER
-    $("#background").delay(1000).fadeOut(800);
-    $(".spinner").delay(500).fadeOut("slow");
-    $(".frame-loading").delay(500).fadeOut("slow");
-    
-        
-});
+	/*---------------------------------------------------- */
+	/* Preloader
+	------------------------------------------------------ */ 
+   $(window).load(function() {
+
+      // will first fade out the loading animation 
+    	$("#loader").fadeOut("slow", function(){
+
+        // will fade out the whole DIV that covers the website.
+        $("#preloader").delay(300).fadeOut("slow");
+
+      });       
+
+  	})
 
 
-$(document).ready(function() {
-    "use strict";
+  	/*---------------------------------------------------- */
+  	/* FitText Settings
+  	------------------------------------------------------ */
+  	setTimeout(function() {
+
+   	$('#intro h1').fitText(1, { minFontSize: '42px', maxFontSize: '84px' });
+
+  	}, 100);
 
 
-    //ABOUT CAROUSEL
-    var a = $('.owl-about');
-        a.owlCarousel({
-           
-           navigation : false,
-           pagination:false, 
-           slideSpeed : 400,
-           singleItem:true
-
-    });
-
-    a = $('.owl-about').owlCarousel();
-    
-    $(".prev-slide").on("click", function() {
-        a.trigger('owl.prev');
-    });
-
-    $(".next-slide").on("click", function() {
-        a.trigger('owl.next');
-    });
+	/*---------------------------------------------------- */
+	/* FitVids
+	------------------------------------------------------ */ 
+  	$(".fluid-video-wrapper").fitVids();
 
 
-    //PORTFOLIO CAROUSEL
-    var b = $('.owl-portfolio');
-        b.owlCarousel({
-          
-           navigation : false,
-           pagination:false, 
-           slideSpeed : 400,
-           singleItem:true
-
-    });
-    
-    b = $('.owl-portfolio').owlCarousel();
-    
-    $(".prev-slide").on("click", function() {
-        b.trigger('owl.prev');
-    });
-
-    $(".next-slide").on("click", function() {
-        b.trigger('owl.next');
-    });
-
-    
-    //SERVICES CAROUSEL
-    var c = $('.owl-services');
-        c.owlCarousel({
-          
-           navigation : false,
-           pagination:false,
-           slideSpeed : 400,
-           singleItem:true
-       
-    });
-
-    c = $('.owl-services').owlCarousel();
-    
-    $(".prev-slide").on("click", function() {
-        c.trigger('owl.prev');
-    });
-
-    $(".next-slide").on("click", function() {
-        c.trigger('owl.next');
-    });
-    
-
-    //TABS
-    $( ".main-item" ).tabs();
-
-    
-    //PORTFOLIO LIGHTBOX
-    $('.test-popup-link').magnificPopup({
-
-        type:'image',
-        gallery: {
-            enabled: true
-        }
-
+	/*---------------------------------------------------- */
+	/* Owl Carousel
+	------------------------------------------------------ */ 
+	$("#owl-slider").owlCarousel({
+        navigation: false,
+        pagination: true,
+        itemsCustom : [
+	        [0, 1],
+	        [700, 2],
+	        [960, 3]
+	     ],
+        navigationText: false
     });
 
 
-    //MENU
-    $('.navicon-button').on("click", function(e) {
-        e.preventDefault();
-          
-        $(this).fadeOut(300);
-        $('.navigation-menu').addClass('openmenu');
-        $('.content').fadeOut(300);
+	/*----------------------------------------------------- */
+	/* Alert Boxes
+  	------------------------------------------------------- */
+	$('.alert-box').on('click', '.close', function() {
+	  $(this).parent().fadeOut(500);
+	});	
 
-        
-    });
-    $('.navigation-menu a').on("click", function(e) {
-         e.preventDefault();
-        
-        $('.navicon-button').fadeIn(300);
-        $('.navigation-menu').removeClass('openmenu');
-        $('.content').delay(300).fadeIn(600);
+
+	/*----------------------------------------------------- */
+	/* Stat Counter
+  	------------------------------------------------------- */
+   var statSection = $("#stats"),
+       stats = $(".stat-count");
+
+   statSection.waypoint({
+
+   	handler: function(direction) {
+
+      	if (direction === "down") {       		
+
+			   stats.each(function () {
+				   var $this = $(this);
+
+				   $({ Counter: 0 }).animate({ Counter: $this.text() }, {
+				   	duration: 4000,
+				   	easing: 'swing',
+				   	step: function (curValue) {
+				      	$this.text(Math.ceil(curValue));
+				    	}
+				  	});
+				});
+
+       	} 
+
+       	// trigger once only
+       	this.destroy();      	
+
+		},
+			
+		offset: "90%"
+	
+	});	
+
+
+	/*---------------------------------------------------- */
+	/*	Masonry
+	------------------------------------------------------ */
+	var containerProjects = $('#folio-wrapper');
+
+	containerProjects.imagesLoaded( function() {
+
+		containerProjects.masonry( {		  
+		  	itemSelector: '.folio-item',
+		  	resize: true 
+		});
+
+	});
+
+
+	/*----------------------------------------------------*/
+	/*	Modal Popup
+	------------------------------------------------------*/
+   $('.item-wrap a').magnificPopup({
+
+      type:'inline',
+      fixedContentPos: false,
+      removalDelay: 300,
+      showCloseBtn: false,
+      mainClass: 'mfp-fade'
+
+   });
+
+   $(document).on('click', '.popup-modal-dismiss', function (e) {
+   	e.preventDefault();
+   	$.magnificPopup.close();
+   });
+
+	
+	/*-----------------------------------------------------*/
+  	/* Navigation Menu
+   ------------------------------------------------------ */  
+   var toggleButton = $('.menu-toggle'),
+       nav = $('.main-navigation');
+
+   // toggle button
+   toggleButton.on('click', function(e) {
+
+		e.preventDefault();
+		toggleButton.toggleClass('is-clicked');
+		nav.slideToggle();
+
+	});
+
+   // nav items
+  	nav.find('li a').on("click", function() {   
+
+   	// update the toggle button 		
+   	toggleButton.toggleClass('is-clicked'); 
+   	// fadeout the navigation panel
+   	nav.fadeOut();   		
+   	     
+  	});
+
+
+   /*---------------------------------------------------- */
+  	/* Highlight the current section in the navigation bar
+  	------------------------------------------------------ */
+	var sections = $("section"),
+	navigation_links = $("#main-nav-wrap li a");	
+
+	sections.waypoint( {
+
+       handler: function(direction) {
+
+		   var active_section;
+
+			active_section = $('section#' + this.element.id);
+
+			if (direction === "up") active_section = active_section.prev();
+
+			var active_link = $('#main-nav-wrap a[href="#' + active_section.attr("id") + '"]');			
+
+         navigation_links.parent().removeClass("current");
+			active_link.parent().addClass("current");
+
+		}, 
+
+		offset: '25%'
+	});
+
+
+	/*---------------------------------------------------- */
+  	/* Smooth Scrolling
+  	------------------------------------------------------ */
+  	$('.smoothscroll').on('click', function (e) {
+	 	
+	 	e.preventDefault();
+
+   	var target = this.hash,
+    	$target = $(target);
+
+    	$('html, body').stop().animate({
+       	'scrollTop': $target.offset().top
+      }, 800, 'swing', function () {
+      	window.location.hash = target;
+      });
+
+  	});  
   
-    });
 
-   
-    //MENU FRAME
-    $('.navicon-button').on("click", function() {
-
-        $('.frame').delay(100).animate({height:"370px",width:'240px',backgroundColor:"rgba(0,0,0,0)"}, 40 );
-    
-    });
-   
-    //HOME FRAME
-    $('.navigation-menu li:nth-child(1) a').on("click", function() {
-  
-        $('.frame').delay(100).animate({height:"240px",width:"240px",backgroundColor:"rgba(0,0,0,0)"}, 40 );
-    
-    });
-   
-    //ABOUT FRAME
-    $('.navigation-menu li:nth-child(2) a').on("click", function() {
-
-        $('.frame').delay(100).animate({height:"500px",width:"550px",backgroundColor:"rgba(0, 5, 5, 0.4)"}, 40 );
-    
-    });
-  
-    //EDUCATION FRAME
-    $('.navigation-menu li:nth-child(3) a').on("click", function() {
-
-        $('.frame').delay(100).animate({height:"500px",width:"550px",backgroundColor:"rgba(0, 5, 5, 0.4)"}, 40 );
-    
-    });
-   
-    //EXPERIENCE FRAME
-    $('.navigation-menu li:nth-child(4) a').on("click", function() {
-
-        $('.frame').delay(100).animate({height:"500px",width:"550px",backgroundColor:"rgba(0, 5, 5, 0.4)"}, 40 );
-    
-    });
-   
-    //PORTFOLIO FRAME
-    $('.navigation-menu li:nth-child(5) a').on("click", function() {
-
-        $('.frame').delay(100).animate({height:"500px",width:"600px",backgroundColor:"rgba(0, 5, 5, 0.4)"}, 40 );
-    
-    });
-   
-    //SERVICES FRAME
-    $('.navigation-menu li:nth-child(6) a').on("click", function() {
-
-        $('.frame').delay(100).animate({height: "370px",width:"500px",backgroundColor:"rgba(0, 5, 5, 0.4)"}, 40 );
-    
-    });
-
-    //CONTACT FRAME
-    $('.navigation-menu li:nth-child(7) a').on("click", function() {
-
-        $('.frame').delay(100).animate({height: "450px",width:"500px",backgroundColor:"rgba(0, 5, 5, 0.4)"}, 40 );
-    
-    });
+   /*---------------------------------------------------- */
+	/*  Placeholder Plugin Settings
+	------------------------------------------------------ */ 
+	$('input, textarea, select').placeholder()  
 
 
-    //CUSTOM SCROLLBAR
-    $(".scrll").perfectScrollbar({
+  	/*---------------------------------------------------- */
+	/*	contact form
+	------------------------------------------------------ */
 
-        wheelSpeed:0.35,
-        suppressScrollX:true
-   
-    });
+	/* local validation */
+	$('#contactForm').validate({
 
+		/* submit via ajax */
+		submitHandler: function(form) {
 
-    //CONTACT FORM
-    $("input,textarea").jqBootstrapValidation({
-        
-        preventSubmit: true,
-        submitError: function($form, event, errors) {
-        // something to have when submit produces an error ?
-        // Not decided if I need it yet
-        },
-        submitSuccess: function($form, event) {
-        event.preventDefault(); // prevent default submit behaviour
-        // get values from FORM
-        var name = $("input#name").val();  
-        var email = $("input#email").val(); 
-        var message = $("textarea#message").val();
-        var firstName = name; // For Success/Failure Message
-        // Check for white space in name for Success/Fail message
-        if (firstName.indexOf(' ') >= 0) {
-        firstName = name.split(' ').slice(0, -1).join(' ');
-          }        
-        $.ajax({
-                url: "./js/mailer.php",
-                type: "POST",
-                data: {name: name, email: email, message: message},
-                cache: false,
-               
-                success: function() {  
-                // Success message
-                $('#success').html("<div class='alert alert-success'>");
-                $('#success > .alert-success').html("<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;").append( "</button>");
-                $('#success > .alert-success').append("Your message has been sent. ");
-                $('#success > .alert-success').append('</div>');
-                            
-                //clear all fields
-                $('#contactForm').trigger("reset");
-                },
-               
-                error: function() {      
-                // Fail message
-                $('#success').html("<div class='alert alert-danger'>");
-                $('#success > .alert-danger').html("<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;").append( "</button>");
-                $('#success > .alert-danger').append("Sorry "+firstName+" it seems that my mail server is not responding");
-                $('#success > .alert-danger').append('</div>');
-         
-                //clear all fields
-                $('#contactForm').trigger("reset");
-                },
-                })
-                },
-        
-                filter: function() {
-                return $(this).is(":visible");
-                },
-                });
+			var sLoader = $('#submit-loader');
 
-        $("a[data-toggle=\"tab\"]").on("click", function(e) {
-                e.preventDefault();
-                $(this).tab("show");
-        });
- 
-    $('#name').on("focus", function() {
-    $('#success').html('');
-    
-    });
+			$.ajax({      	
+
+		      type: "POST",
+		      url: "inc/sendEmail.php",
+		      data: $(form).serialize(),
+		      beforeSend: function() { 
+
+		      	sLoader.fadeIn(); 
+
+		      },
+		      success: function(msg) {
+
+	            // Message was sent
+	            if (msg == 'OK') {
+	            	sLoader.fadeOut(); 
+	               $('#message-warning').hide();
+	               $('#contactForm').fadeOut();
+	               $('#message-success').fadeIn();   
+	            }
+	            // There was an error
+	            else {
+	            	sLoader.fadeOut(); 
+	               $('#message-warning').html(msg);
+		            $('#message-warning').fadeIn();
+	            }
+
+		      },
+		      error: function() {
+
+		      	sLoader.fadeOut(); 
+		      	$('#message-warning').html("Something went wrong. Please try again.");
+		         $('#message-warning').fadeIn();
+
+		      }
+
+	      });     		
+  		}
+
+	});
 
 
-    //IE SCROLL BUG FIX
-    if(navigator.userAgent.match(/Trident\/7\./)) {
-   
-    $('body').on("mousewheel", function () {
-        event.preventDefault();
+ 	/*----------------------------------------------------- */
+  	/* Back to top
+   ------------------------------------------------------- */ 
+	var pxShow = 300; // height on which the button will show
+	var fadeInTime = 400; // how slow/fast you want the button to show
+	var fadeOutTime = 400; // how slow/fast you want the button to hide
+	var scrollSpeed = 300; // how slow/fast you want the button to scroll to top. can be a value, 'slow', 'normal' or 'fast'
 
-        var wheelDelta = event.wheelDelta;
+   // Show or hide the sticky footer button
+	jQuery(window).scroll(function() {
 
-        var currentScrollPosition = window.pageYOffset;
-        window.scrollTo(0, currentScrollPosition - wheelDelta);
-    });
+		if (!( $("#header-search").hasClass('is-visible'))) {
 
-    $('body').keydown(function (e) {
+			if (jQuery(window).scrollTop() >= pxShow) {
+				jQuery("#go-top").fadeIn(fadeInTime);
+			} else {
+				jQuery("#go-top").fadeOut(fadeOutTime);
+			}
 
-        var currentScrollPosition = window.pageYOffset;
+		}		
 
-        switch (e.which) {
+	});		
 
-            case 38: // up
-                e.preventDefault(); // prevent the default action (scroll / move caret)
-                window.scrollTo(0, currentScrollPosition - 120);
-                break;
-
-            case 40: // down
-                e.preventDefault(); // prevent the default action (scroll / move caret)
-                window.scrollTo(0, currentScrollPosition + 120);
-                break;
-
-            default: return; // exit this handler for other keys
-        } 
-    });
-    }
-
-
-});
+})(jQuery);
